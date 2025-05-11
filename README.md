@@ -60,7 +60,7 @@ pip3 --version
 #### 1.4 安装必要的Python库
 打开终端或命令提示符，运行：
 ```
-pip3 install selenium webdriver-manager schedule time
+pip3 install selenium webdriver-manager schedule
 ```
 
 ### 2. 浏览器与WebDriver配置
@@ -84,7 +84,7 @@ pip3 install selenium webdriver-manager schedule time
 ### 3. 脚本配置与使用
 
 #### 3.1 下载脚本
-从GitHub仓库下载脚本到本地。
+从GitHub仓库下载脚本到本地（只需要下载[grabBadmintonField.py](https://github.com/zzsnb/SYSU-Badminton-Field-Grab-Script/blob/main/grabBadmintonField.py) 即可）。
 
 #### 3.2 配置脚本
 在VS Code中打开脚本文件，修改以下关键参数：
