@@ -62,6 +62,11 @@ pip3 --version
 ```
 pip3 install selenium webdriver-manager schedule
 ```
+系统可能会提示说不允许安装在全局环境下 此时可以开一个venv或conda的虚拟环境  
+或者使用以下代码强行安装（不推荐）  
+```
+pip3 install --user --ignore-installed selenium webdriver-manager schedule
+```
 
 ### 2. 浏览器与WebDriver配置
 
@@ -116,6 +121,12 @@ python3 grabBadmintonField.py
 1. 确保已经完成了上述配置
 2. **重要**: 将手动登录的代码重新注释掉（前面加上#）
 3. 在接近抢场时间前启动脚本
+```
+python3 grabBadmintonField.py
+``` 
+正式启动时 脚本的最后几行代码应当是如下状态  
+<img width="714" alt="image" src="https://github.com/user-attachments/assets/036a34bb-f569-476a-b560-8bd6083e30c1" />  
+
 
 ### 4. 常见问题与解决方案
 
@@ -141,6 +152,8 @@ python3 grabBadmintonField.py
 - **_可能导致账号被封禁，甚至被学校处分（网上的通知写得很清楚 会停止账户预订权限一年 且到期后需要提交检讨_**
 - 建议在抢场前20分钟启动脚本，不要提前太久
 - 只能使用校园网抢场
+- 如果有人敢拿这份代码去卖钱 或者提供抢场服务什么的 我只好说 祝你永远杀下网 拍线打一次断一次 睡觉做噩梦 吃饭噎着喉咙  
+- 脚本虽好用 但还是建议大家只抢自己需要的场 也不要抢得太多 毕竟打球打太多真的伤身  
 
 ---
 
