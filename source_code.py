@@ -1,4 +1,6 @@
-
+# 这份代码不是我写的 来源不明 我的代码部分借鉴了这份代码 某种程度上是对这份代码的重写
+# 这个脚本引入了用百度识图识别登陆时所需要的验证码这一机制
+# 我觉得有点过于臃肿 配置起来太麻烦 所以直接采用了获取chrome登陆信息的机制
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
