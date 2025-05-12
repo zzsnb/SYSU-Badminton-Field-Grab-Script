@@ -250,7 +250,7 @@ def book(driver):
     choose_field_time(driver)
     grab(driver)
 
-
+# 这里的手动测试代码 或许后续会改成每次启动脚本时 强制执行
 # 下面这几行是手动测试的代码 抢场前务必先手动测试 并输入该输入的netID、密码和验证码
 # login(driver)
 # lead_to_place(driver)
