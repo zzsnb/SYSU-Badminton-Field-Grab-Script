@@ -5,20 +5,27 @@ from selenium.webdriver.common.by import By
 from selenium.common import TimeoutException
 import time
 import schedule
+import random
+
+
 
 # !!! 这里需要你修改配置
-bookDate = "05-14"
-bookTime1 = 20
-bookTime2 = 21
+bookDate = "05-15"
+bookTime1 = 19
+bookTime2 = 20
 # 如果要选8:00-9:00的场 就写8 如果要选21:00 - 22:00 的场 就写21
 bookCampus = "east" 
 # 东校 - east 南校 - south 北校 - north 深圳 - shenzhen 珠海 - zhuhai
-bookField = 12 # 这里填入整数 不要加双引号！
+bookField = 6 # 首选场，这里填入整数 不要加双引号！
+fallbackField1 = 2 # 备选场1，这里填入整数 不要加双引号！
+fallbackField2 = 7 # 备选场2，这里填入整数 不要加双引号！
+fallbackField3 = 9 # 备选场2，这里填入整数 不要加双引号！
 # 东校有14个场 南校有 个场 深圳有12个场 珠海有10个场
 # 但是由于东校的场地11是不存在的 所以当你抢东校12/13/14号场时 请自动-1 输入成11/12/13
 waitTimeForShow = 0 # 正式使用时 请把这个调整成0 如果想要看抢场的过程 可以调成2或3
 # !!!!!!
 
+waitTimeChangeField = 1
 
 switch_dict = {
     "south": "广州校区南校园",
@@ -161,7 +168,10 @@ def book(driver):
         while True:
             try:
                 date_xpath = f"//div[@class='date-number' and text()='{bookDate}']/ancestor::div[@class='date-item']"
-                date_item = WebDriverWait(driver, 10).until(
+                # 随机延迟10~50毫秒 + 1秒 （怕系统觉得我手速太快了 但又不想系统发现我每次刷新的间隔都一样
+                delay_ms = random.randint(10, 50) / 1000.0
+                date_item = WebDriverWait(driver, 1 + delay_ms).until(
+                    # 这里的刷新机制可能需要更加激进 比如2秒刷新一次？
                     EC.element_to_be_clickable((By.XPATH, date_xpath))
                 )
                 date_item.click()
@@ -171,31 +181,46 @@ def book(driver):
             except TimeoutException:
                 print("找不到日期，加载失败，刷新页面重试")
                 driver.refresh()
+                # 随机延迟50~100毫秒（根据系统容忍度调整）
+                delay_ms = random.randint(30, 100) / 1000.0
+                time.sleep(delay_ms)
 
     def choose_field_time(driver):
-        try:
-            play_button = WebDriverWait(driver, 40).until(
-                EC.element_to_be_clickable((
-                    # By.XPATH, "//*[@id='app']/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[1]/td[8]/button"    #这是预约其他场和其他时间的代码，根据这个确定预约时间.第12行代表21-22点，第8列代表第14个场
-                    # By.XPATH, "/html/body/div/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[11]/td[9]/button"    # 这是预约其他场和其他时间的代码，根据这个确定预约时间.第2行代表9-10点，第10列代表第16个场
-                    # By.XPATH, "/html/body/div/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[1]/td[10]/button"
-                    By.XPATH, f"/html/body/div/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[{timeName1}]/td[{fieldName}]/button"   #这里对应东校的场地tr[11]/td[9]代表时间20-21，场地8
-                ))
-            )
-            play_button.click()
-            play_button = WebDriverWait(driver, 40).until(
-                EC.element_to_be_clickable((
-                    # By.XPATH, "//*[@id='app']/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[1]/td[8]/button"    #这是预约其他场和其他时间的代码，根据这个确定预约时间.第12行代表21-22点，第8列代表第14个场
-                    # By.XPATH, "/html/body/div/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[11]/td[9]/button"    # 这是预约其他场和其他时间的代码，根据这个确定预约时间.第2行代表9-10点，第10列代表第16个场
-                    # By.XPATH, "/html/body/div/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[1]/td[10]/button"
-                    By.XPATH, f"/html/body/div/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[{timeName2}]/td[{fieldName}]/button"   #这里对应东校的场地tr[11]/td[9]代表时间20-21，场地8
-                ))
-            )
-            play_button.click()
-            print("两个场点击成功")
-        except TimeoutException:
-            print("未找时段场馆按钮，可能预约时间未开放")
-    
+        fieldChoice = fieldName # 新建fieldChoice这个变量是为了能够使用备选方案。
+        while True:
+            try:
+                play_button = WebDriverWait(driver, waitTimeChangeField).until(
+                    EC.element_to_be_clickable((
+                        # By.XPATH, "//*[@id='app']/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[1]/td[8]/button"    #这是预约其他场和其他时间的代码，根据这个确定预约时间.第12行代表21-22点，第8列代表第14个场
+                        # By.XPATH, "/html/body/div/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[11]/td[9]/button"    # 这是预约其他场和其他时间的代码，根据这个确定预约时间.第2行代表9-10点，第10列代表第16个场
+                        # By.XPATH, "/html/body/div/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[1]/td[10]/button"
+                        By.XPATH, f"/html/body/div/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[{timeName1}]/td[{fieldChoice}]/button"   #这里对应东校的场地tr[11]/td[9]代表时间20-21，场地8
+                    ))
+                )
+                play_button.click()
+                play_button = WebDriverWait(driver, waitTimeChangeField).until(
+                    EC.element_to_be_clickable((
+                        # By.XPATH, "//*[@id='app']/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[1]/td[8]/button"    #这是预约其他场和其他时间的代码，根据这个确定预约时间.第12行代表21-22点，第8列代表第14个场
+                        # By.XPATH, "/html/body/div/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[11]/td[9]/button"    # 这是预约其他场和其他时间的代码，根据这个确定预约时间.第2行代表9-10点，第10列代表第16个场
+                        # By.XPATH, "/html/body/div/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[1]/td[10]/button"
+                        By.XPATH, f"/html/body/div/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[{timeName2}]/td[{fieldChoice}]/button"   #这里对应东校的场地tr[11]/td[9]代表时间20-21，场地8
+                    ))
+                )
+                play_button.click()
+                print("两个场点击成功")
+                break
+            except TimeoutException:
+                print("未找时段场馆按钮，可能预约时间未开放")
+                # 这里增加了一个机制 当找不到这个按钮的时候 自动改成备选的场号
+                if fieldChoice == fieldName:
+                    fieldChoice = fallbackField1
+                elif fieldChoice == fallbackField1:
+                    fieldChoice = fallbackField2
+                elif fieldChoice == fallbackField2:
+                    fieldChoice = fallbackField3
+
+            
+            
     def grab(driver):
         try:
             finbook_button = WebDriverWait(driver, 40).until(
@@ -208,8 +233,10 @@ def book(driver):
             time.sleep(10)
         except TimeoutException:
             print("未找到预约按钮，可能预约时间未开放")
+            # 这里并没有增加失败改用备选方案的机制 或许如果在点击“预约”之后 发现还是不行
+            # 这就需要自动关掉通知 然后换用备选方案再抢一次
 
-    driver.refresh()
+    driver.refresh() # 到点了需要先refresh一次
     choose_date(driver)
     choose_field_time(driver)
     grab(driver)
@@ -223,9 +250,9 @@ def book(driver):
 # 下面这几行是定时抢场操作 使用时务必用"#"将手动测试代码设置为注释
 done = False
 
-schedule.every().day.at("21:50").do(login,driver=driver)
-schedule.every().day.at("21:55").do(lead_to_place,driver=driver) 
-schedule.every().day.at("22:00").do(book,driver=driver)     
+schedule.every().day.at("21:55").do(login,driver=driver)
+schedule.every().day.at("21:57").do(lead_to_place,driver=driver) 
+schedule.every().day.at("21:59:59").do(book,driver=driver) # 提前1s刷新 每隔1.0xs再次刷新
 
 while not done:
    schedule.run_pending()
