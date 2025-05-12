@@ -6,10 +6,14 @@ from selenium.common import TimeoutException
 import time
 import schedule
 import random
+import random
 
 
 
 # !!! 这里需要你修改配置
+bookDate = "05-15"
+bookTime1 = 19
+bookTime2 = 20
 bookDate = "05-15"
 bookTime1 = 19
 bookTime2 = 20
@@ -26,6 +30,7 @@ waitTimeForShow = 0 # 正式使用时 请把这个调整成0 如果想要看抢�
 # !!!!!!
 
 waitTimeChangeField = 1
+waitTimeChangeField = 0.2
 
 switch_dict = {
     "south": "广州校区南校园",
@@ -218,6 +223,10 @@ def book(driver):
                     fieldChoice = fallbackField2
                 elif fieldChoice == fallbackField2:
                     fieldChoice = fallbackField3
+                elif fieldChoice == fallbackField3:
+                    break
+                else:
+                    break
 
             
             
