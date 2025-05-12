@@ -7,16 +7,16 @@ import time
 import schedule
 
 # !!! 这里需要你修改配置
-bookDate = "05-12"
-bookTime1 = 8
-bookTime2 = 9
+bookDate = "05-14"
+bookTime1 = 20
+bookTime2 = 21
 # 如果要选8:00-9:00的场 就写8 如果要选21:00 - 22:00 的场 就写21
 bookCampus = "east" 
 # 东校 - east 南校 - south 北校 - north 深圳 - shenzhen 珠海 - zhuhai
-bookField = 11 # 这里填入整数 不要加双引号！
+bookField = 12 # 这里填入整数 不要加双引号！
 # 东校有14个场 南校有 个场 深圳有12个场 珠海有10个场
 # 但是由于东校的场地11是不存在的 所以当你抢东校12/13/14号场时 请自动-1 输入成11/12/13
-waitTimeForShow = 0 # 正式使用时 请把这个调整成0 如果想要看抢场的过程 可以调成2/3
+waitTimeForShow = 0 # 正式使用时 请把这个调整成0 如果想要看抢场的过程 可以调成2或3
 # !!!!!!
 
 
@@ -81,12 +81,14 @@ fieldName = field_map[bookField]
 
 options = webdriver.ChromeOptions()
 
+
 # !!!!!!这一部分需要你配置!!!!
 options.add_argument("--user-data-dir='/Users/jason/Library/Application Support/Google/Chrome/") 
 # !!!!!这里要替换为你电脑上chrome用户数据目录的实际路径!!!!!
 # mac上往往就是我上面这个链接 但是还是最好用访达的"command+shift+g"确认一下那里是不是有这个文件
 # 在mac上，对一个文件右键后按住option键，会发现复制按钮变成了复制路径
 # !!!!!!
+
 
 options.add_argument("--profile-directory=Default")  # 使用默认配置（如果有多个配置需指定）
 # 尽量不要让浏览器知道自己在被自动化控制
@@ -207,6 +209,7 @@ def book(driver):
         except TimeoutException:
             print("未找到预约按钮，可能预约时间未开放")
 
+    driver.refresh()
     choose_date(driver)
     choose_field_time(driver)
     grab(driver)
