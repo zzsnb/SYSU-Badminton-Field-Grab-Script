@@ -12,16 +12,13 @@ import random
 
 # !!! 这里需要你修改配置
 bookDate = "05-15"
-bookTime1 = 19
-bookTime2 = 20
-bookDate = "05-15"
-bookTime1 = 19
-bookTime2 = 20
+bookTime1 = 8
+bookTime2 = 9
 # 如果要选8:00-9:00的场 就写8 如果要选21:00 - 22:00 的场 就写21
 bookCampus = "east" 
 # 东校 - east 南校 - south 北校 - north 深圳 - shenzhen 珠海 - zhuhai
-bookField = 6 # 首选场，这里填入整数 不要加双引号！
-fallbackField1 = 2 # 备选场1，这里填入整数 不要加双引号！
+bookField = 2 # 首选场，这里填入整数 不要加双引号！
+fallbackField1 = 6 # 备选场1，这里填入整数 不要加双引号！
 fallbackField2 = 7 # 备选场2，这里填入整数 不要加双引号！
 fallbackField3 = 9 # 备选场2，这里填入整数 不要加双引号！
 # 东校有14个场 南校有 个场 深圳有12个场 珠海有10个场
@@ -29,7 +26,6 @@ fallbackField3 = 9 # 备选场2，这里填入整数 不要加双引号！
 waitTimeForShow = 0 # 正式使用时 请把这个调整成0 如果想要看抢场的过程 可以调成2或3
 # !!!!!!
 
-waitTimeChangeField = 1
 waitTimeChangeField = 0.2
 
 switch_dict = {
@@ -252,16 +248,16 @@ def book(driver):
 
 # 这里的手动测试代码 或许后续会改成每次启动脚本时 强制执行
 # 下面这几行是手动测试的代码 抢场前务必先手动测试 并输入该输入的netID、密码和验证码
-# login(driver)
-# lead_to_place(driver)
-# book(driver)
+login(driver)
+lead_to_place(driver)
+book(driver)
 
 # 下面这几行是定时抢场操作 使用时务必用"#"将手动测试代码设置为注释
 done = False
 
-schedule.every().day.at("21:55").do(login,driver=driver)
-schedule.every().day.at("21:57").do(lead_to_place,driver=driver) 
-schedule.every().day.at("21:59:59").do(book,driver=driver) # 提前1s刷新 每隔1.0xs再次刷新
+# schedule.every().day.at("21:55").do(login,driver=driver)
+# schedule.every().day.at("21:57").do(lead_to_place,driver=driver) 
+# schedule.every().day.at("21:59:59").do(book,driver=driver) # 提前1s刷新 每隔1.0xs再次刷新
 
 while not done:
    schedule.run_pending()
