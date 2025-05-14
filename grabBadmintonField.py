@@ -11,9 +11,9 @@ import random
 
 
 # !!! 这里需要你修改配置
-bookDate = "05-15"
-bookTime1 = 8
-bookTime2 = 9
+bookDate = "05-17"
+bookTime1 = 21
+bookTime2 = 20 # 记得bookTime1最好比bookTime2大（尤其是选20和21时）， 因为新弹出来的会遮挡到下面的部分
 # 如果要选8:00-9:00的场 就写8 如果要选21:00 - 22:00 的场 就写21
 bookCampus = "east" 
 # 东校 - east 南校 - south 北校 - north 深圳 - shenzhen 珠海 - zhuhai
@@ -223,7 +223,7 @@ def book(driver):
                     break
                 else:
                     break
-
+                # 这里的备选逻辑，至少应该加一条 如果两个场中有一个无法点击（往往是被挡住了），那么先点预约 然后再点另外一个场的另外一个时间
             
             
     def grab(driver):
@@ -248,16 +248,16 @@ def book(driver):
 
 # 这里的手动测试代码 或许后续会改成每次启动脚本时 强制执行
 # 下面这几行是手动测试的代码 抢场前务必先手动测试 并输入该输入的netID、密码和验证码
-login(driver)
-lead_to_place(driver)
-book(driver)
+# login(driver)
+# lead_to_place(driver)
+# book(driver)
 
 # 下面这几行是定时抢场操作 使用时务必用"#"将手动测试代码设置为注释
 done = False
 
-# schedule.every().day.at("21:55").do(login,driver=driver)
-# schedule.every().day.at("21:57").do(lead_to_place,driver=driver) 
-# schedule.every().day.at("21:59:59").do(book,driver=driver) # 提前1s刷新 每隔1.0xs再次刷新
+schedule.every().day.at("21:58").do(login,driver=driver)
+schedule.every().day.at("21:58:30").do(lead_to_place,driver=driver) 
+schedule.every().day.at("21:59:59").do(book,driver=driver) # 提前1s刷新 每隔1.0xs再次刷新
 
 while not done:
    schedule.run_pending()
