@@ -11,7 +11,7 @@ import random
 
 
 # !!! 这里需要你修改配置
-bookDate = "05-17"
+bookDate = "05-18"
 bookTime1 = 21
 bookTime2 = 20 # 记得bookTime1最好比bookTime2大（尤其是选20和21时）， 因为新弹出来的会遮挡到下面的部分
 # 如果要选8:00-9:00的场 就写8 如果要选21:00 - 22:00 的场 就写21
@@ -190,6 +190,10 @@ def book(driver):
         fieldChoice = fieldName # 新建fieldChoice这个变量是为了能够使用备选方案。
         while True:
             try:
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                # 增加了滚动到底部的代码 避免被预约按钮遮挡住第二个场地的选择。
+                delay_ms = random.randint(30, 100) / 1000.0
+                time.sleep(delay_ms)
                 play_button = WebDriverWait(driver, waitTimeChangeField).until(
                     EC.element_to_be_clickable((
                         # By.XPATH, "//*[@id='app']/div/div[2]/main/div/div[2]/div[1]/div[4]/table/tbody/tr[1]/td[8]/button"    #这是预约其他场和其他时间的代码，根据这个确定预约时间.第12行代表21-22点，第8列代表第14个场
@@ -248,16 +252,16 @@ def book(driver):
 
 # 这里的手动测试代码 或许后续会改成每次启动脚本时 强制执行
 # 下面这几行是手动测试的代码 抢场前务必先手动测试 并输入该输入的netID、密码和验证码
-# login(driver)
-# lead_to_place(driver)
-# book(driver)
+login(driver)
+lead_to_place(driver)
+book(driver)
 
 # 下面这几行是定时抢场操作 使用时务必用"#"将手动测试代码设置为注释
 done = False
 
-schedule.every().day.at("21:58").do(login,driver=driver)
-schedule.every().day.at("21:58:30").do(lead_to_place,driver=driver) 
-schedule.every().day.at("21:59:59").do(book,driver=driver) # 提前1s刷新 每隔1.0xs再次刷新
+# schedule.every().day.at("21:59").do(login,driver=driver)
+# schedule.every().day.at("21:59:30").do(lead_to_place,driver=driver) 
+# schedule.every().day.at("21:59:59").do(book,driver=driver) # 提前1s刷新 每隔1.0xs再次刷新
 
 while not done:
    schedule.run_pending()
